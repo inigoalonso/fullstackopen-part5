@@ -75,6 +75,34 @@ const App = () => {
       }, 5000)
     }
   }
+  
+  const handleLike = async (blog) => {
+    const updatedBlog = {
+      ...blog,
+      likes: blog.likes + 1,
+      user: user.id
+    };
+
+    try {
+      const returnedBlog = await blogService.update(blog.id, updatedBlog);
+      setBlogs(blogs.map(b => b.id !== blog.id ? b : returnedBlog));
+      setNotification({
+        message: `Liked ${returnedBlog.title} by ${returnedBlog.author}`,
+        type: 'success'
+      });
+      setTimeout(() => {
+        setNotification({ message: null, type: '' })
+      }, 5000);
+    } catch (exception) {
+      setNotification({
+        message: 'Error liking blog',
+        type: 'error'
+      });
+      setTimeout(() => {
+        setNotification({ message: null, type: '' })
+      }, 5000);
+    }
+  }
 
   const handleLogin = async (event) => {
     event.preventDefault()
@@ -162,7 +190,7 @@ const App = () => {
           {blogForm()}
           <h2>blogs</h2>
           {blogs.map(blog =>
-            <Blog key={blog.id} blog={blog} />
+            <Blog key={blog.id} blog={blog} handleLike={handleLike} />
           )}
         </div>
       }
