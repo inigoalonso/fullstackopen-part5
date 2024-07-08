@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'
+import PropTypes from 'prop-types'
 
 const Blog = ({ blog, handleLike, handleDelete, currentUser }) => {
-  const [detailsVisible, setDetailsVisible] = useState(false);
+  const [detailsVisible, setDetailsVisible] = useState(false)
 
   const toggleDetails = () => {
-    setDetailsVisible(!detailsVisible);
+    setDetailsVisible(!detailsVisible)
   }
 
   return (
@@ -17,7 +18,7 @@ const Blog = ({ blog, handleLike, handleDelete, currentUser }) => {
         <div className="blog-details">
           <p>{blog.url}<br />
           likes {blog.likes} <button onClick={() => handleLike(blog)}>like</button><br />
-          {blog.author}</p>
+            {blog.author}</p>
           {/* Only show the button if the user is the same as the blog user */}
           {currentUser && blog.user && blog.user.username === currentUser.username && (
             <button onClick={() => handleDelete(blog)}>remove</button>
@@ -25,7 +26,14 @@ const Blog = ({ blog, handleLike, handleDelete, currentUser }) => {
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default Blog;
+Blog.propTypes = {
+  blog: PropTypes.object.isRequired,
+  handleLike: PropTypes.func.isRequired,
+  handleDelete: PropTypes.func.isRequired,
+  currentUser: PropTypes.object
+}
+
+export default Blog

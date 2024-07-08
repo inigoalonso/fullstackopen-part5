@@ -5,21 +5,21 @@ import LoginForm from './components/LoginForm'
 import BlogForm from './components/BlogForm'
 import blogService from './services/blogs'
 import loginService from './services/login'
-import './index.css';
+import './index.css'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [username, setUsername] = useState('') 
+  const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [notification, setNotification] = useState({ message: null, type: '' });
+  const [notification, setNotification] = useState({ message: null, type: '' })
   const [loginVisible, setLoginVisible] = useState(false)
   const [blogFormVisible, setBlogFormVisible] = useState(false)
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
       setBlogs( blogs )
-    )  
+    )
   }, [])
 
   useEffect(() => {
@@ -75,38 +75,38 @@ const App = () => {
       }, 5000)
     }
   }
-  
+
   const handleLike = async (blog) => {
     const updatedBlog = {
       ...blog,
       likes: blog.likes + 1,
       user: user.id
-    };
+    }
 
     try {
-      const returnedBlog = await blogService.update(blog.id, updatedBlog);
-      setBlogs(blogs.map(b => b.id !== blog.id ? b : returnedBlog));
+      const returnedBlog = await blogService.update(blog.id, updatedBlog)
+      setBlogs(blogs.map(b => b.id !== blog.id ? b : returnedBlog))
       setNotification({
         message: `Liked ${returnedBlog.title} by ${returnedBlog.author}`,
         type: 'success'
-      });
+      })
       setTimeout(() => {
         setNotification({ message: null, type: '' })
-      }, 5000);
+      }, 5000)
     } catch (exception) {
       setNotification({
         message: 'Error liking blog',
         type: 'error'
-      });
+      })
       setTimeout(() => {
         setNotification({ message: null, type: '' })
-      }, 5000);
+      }, 5000)
     }
   }
 
   const handleLogin = async (event) => {
     event.preventDefault()
-    
+
     try {
       const user = await loginService.login({
         username, password,
@@ -133,23 +133,23 @@ const App = () => {
   const handleDelete = async (blog) => {
     if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
       try {
-        await blogService.removeBlog(blog.id);
-        setBlogs(blogs.filter(b => b.id !== blog.id));
+        await blogService.removeBlog(blog.id)
+        setBlogs(blogs.filter(b => b.id !== blog.id))
         setNotification({
           message: `Deleted ${blog.title} by ${blog.author}`,
           type: 'success'
-        });
+        })
         setTimeout(() => {
           setNotification({ message: null, type: '' })
-        }, 5000);
+        }, 5000)
       } catch (exception) {
         setNotification({
           message: 'Error deleting blog',
           type: 'error'
-        });
+        })
         setTimeout(() => {
           setNotification({ message: null, type: '' })
-        }, 5000);
+        }, 5000)
       }
     }
   }
@@ -214,10 +214,10 @@ const App = () => {
           {blogForm()}
           <h2>blogs</h2>
           {blogs
-          .sort((a, b) => b.likes - a.likes)
-          .map(blog =>
-            <Blog key={blog.id} blog={blog} handleLike={handleLike} handleDelete={handleDelete} currentUser={user} />
-          )}
+            .sort((a, b) => b.likes - a.likes)
+            .map(blog =>
+              <Blog key={blog.id} blog={blog} handleLike={handleLike} handleDelete={handleDelete} currentUser={user} />
+            )}
         </div>
       }
 
