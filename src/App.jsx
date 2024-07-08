@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
+import Notification from './components/Notification'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import './index.css';
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -11,7 +13,7 @@ const App = () => {
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  // const [errorMessage, setErrorMessage] = useState(null)
+  const [notification, setNotification] = useState({ message: null, type: '' });
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -36,14 +38,52 @@ const App = () => {
       url: newUrl,
     }
   
-    blogService
+    try {
+      if (!newTitle || !newAuthor || !newUrl) {
+        setNotification({
+          message: 'Title, Author and URL are required',
+          type: 'error'
+        })
+        setTimeout(() => {
+          setNotification({ message: null, type: '' })
+        }, 5000)
+        return
+      }
+    }
+    catch (exception) {
+      setNotification({
+        message: 'Title, Author and URL are required',
+        type: 'error'
+      })
+      setTimeout(() => {
+        setNotification({ message: null, type: '' })
+      }, 5000)
+    }
+    try{
+      blogService
       .create(blogObject)
         .then(returnedBlog => {
         setBlogs(blogs.concat(returnedBlog))
         setNewTitle('') // Reset title state
         setNewAuthor('') // Reset author state
         setNewUrl('') // Reset URL state
+        setNotification({
+          message: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
+          type: 'success'
+        })
+        setTimeout(() => {
+          setNotification({ message: null, type: '' })
+        }, 5000)
       })
+    } catch (exception) {
+      setNotification({
+        message: 'Error creating blog',
+        type: 'error'
+      })
+      setTimeout(() => {
+        setNotification({ message: null, type: '' })
+      }, 5000)
+    }
   }
 
   const handleBlogChange = (event) => {
@@ -73,11 +113,13 @@ const App = () => {
       setUsername('')
       setPassword('')
     } catch (exception) {
-      // setErrorMessage('Wrong credentials')
-      // setTimeout(() => {
-      //   setErrorMessage(null)
-      // }, 5000)
-      console.log('Wrong credentials')
+      setNotification({
+        message: 'Wrong credentials',
+        type: 'error'
+      })
+      setTimeout(() => {
+        setNotification({ message: null, type: '' })
+      }, 5000)
     }
   }
 
@@ -127,7 +169,7 @@ const App = () => {
     <div>
       <h1>Blog App</h1>
 
-      {/* <Notification message={errorMessage} /> */}
+      <Notification message={notification.message} type={notification.type} />
 
       {user === null ?
         loginForm() :
