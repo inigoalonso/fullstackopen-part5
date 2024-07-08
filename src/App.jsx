@@ -130,6 +130,30 @@ const App = () => {
     }
   }
 
+  const handleDelete = async (blog) => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      try {
+        await blogService.removeBlog(blog.id);
+        setBlogs(blogs.filter(b => b.id !== blog.id));
+        setNotification({
+          message: `Deleted ${blog.title} by ${blog.author}`,
+          type: 'success'
+        });
+        setTimeout(() => {
+          setNotification({ message: null, type: '' })
+        }, 5000);
+      } catch (exception) {
+        setNotification({
+          message: 'Error deleting blog',
+          type: 'error'
+        });
+        setTimeout(() => {
+          setNotification({ message: null, type: '' })
+        }, 5000);
+      }
+    }
+  }
+
   const loginForm = () => {
     const hideWhenVisible = { display: loginVisible ? 'none' : '' }
     const showWhenVisible = { display: loginVisible ? '' : 'none' }
@@ -192,7 +216,7 @@ const App = () => {
           {blogs
           .sort((a, b) => b.likes - a.likes)
           .map(blog =>
-            <Blog key={blog.id} blog={blog} handleLike={handleLike} />
+            <Blog key={blog.id} blog={blog} handleLike={handleLike} handleDelete={handleDelete} currentUser={user} />
           )}
         </div>
       }
