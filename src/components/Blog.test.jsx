@@ -58,3 +58,32 @@ const likesElement = screen.getByText(/likes 0/)
 expect(urlElement).toBeDefined()
 expect(likesElement).toBeDefined()
 })
+
+test('calls event handler twice if the like button is clicked twice', async () => {
+  const blog = {
+    title: 'Rendering the component for tests',
+    author: 'Test Author',
+    url: 'http://example.com',
+    likes: 0,
+    user: {
+      username: 'testuser'
+    },
+    id: '123'
+  }
+
+  const mockHandler = vi.fn()
+
+  render(
+    <Blog key={blog.id} blog={blog} handleLike={mockHandler} handleDelete={mockHandler} currentUser={blog.user} />
+  )
+
+  const user = userEvent.setup()
+  const viewButton = screen.getByText('view')
+  await user.click(viewButton)
+
+  const likeButton = screen.getByText('like')
+  await user.click(likeButton)
+  await user.click(likeButton)
+
+  expect(mockHandler).toHaveBeenCalledTimes(2)
+})
