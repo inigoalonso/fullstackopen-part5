@@ -9,9 +9,6 @@ import './index.css';
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [newTitle, setNewTitle] = useState('');
-  const [newAuthor, setNewAuthor] = useState('');
-  const [newUrl, setNewUrl] = useState('');
   const [username, setUsername] = useState('') 
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
@@ -34,16 +31,9 @@ const App = () => {
     }
   }, [])
 
-  const addBlog = (event) => {
-    event.preventDefault()
-    const blogObject = {
-      title: newTitle,
-      author: newAuthor,
-      url: newUrl,
-    }
-  
+  const addBlog = (blogObject) => {
     try {
-      if (!newTitle || !newAuthor || !newUrl) {
+      if (!blogObject.title || !blogObject.author || !blogObject.url) {
         setNotification({
           message: 'Title, Author and URL are required',
           type: 'error'
@@ -53,8 +43,7 @@ const App = () => {
         }, 5000)
         return
       }
-    }
-    catch (exception) {
+    } catch (exception) {
       setNotification({
         message: 'Title, Author and URL are required',
         type: 'error'
@@ -63,22 +52,19 @@ const App = () => {
         setNotification({ message: null, type: '' })
       }, 5000)
     }
-    try{
+    try {
       blogService
-      .create(blogObject)
+        .create(blogObject)
         .then(returnedBlog => {
-        setBlogs(blogs.concat(returnedBlog))
-        setNewTitle('') // Reset title state
-        setNewAuthor('') // Reset author state
-        setNewUrl('') // Reset URL state
-        setNotification({
-          message: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
-          type: 'success'
+          setBlogs(blogs.concat(returnedBlog))
+          setNotification({
+            message: `a new blog ${returnedBlog.title} by ${returnedBlog.author} added`,
+            type: 'success'
+          })
+          setTimeout(() => {
+            setNotification({ message: null, type: '' })
+          }, 5000)
         })
-        setTimeout(() => {
-          setNotification({ message: null, type: '' })
-        }, 5000)
-      })
     } catch (exception) {
       setNotification({
         message: 'Error creating blog',
@@ -87,17 +73,6 @@ const App = () => {
       setTimeout(() => {
         setNotification({ message: null, type: '' })
       }, 5000)
-    }
-  }
-
-  const handleBlogChange = (event) => {
-    const { name, value } = event.target;
-    if (name === 'title') {
-      setNewTitle(value);
-    } else if (name === 'author') {
-      setNewAuthor(value);
-    } else if (name === 'url') {
-      setNewUrl(value);
     }
   }
 
@@ -167,10 +142,6 @@ const App = () => {
         <div style={showWhenVisible}>
           <BlogForm
             addBlog={addBlog}
-            newTitle={newTitle}
-            newAuthor={newAuthor}
-            newUrl={newUrl}
-            handleBlogChange={handleBlogChange}
           />
           <button onClick={() => setBlogFormVisible(false)}>cancel</button>
         </div>
