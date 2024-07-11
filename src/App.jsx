@@ -111,6 +111,13 @@ const App = () => {
         username, password,
       })
 
+      setNotification({
+        message: `${user.name} logged-in`,
+        type: 'success'
+      })
+      setTimeout(() => {
+        setNotification({ message: null, type: '' })
+      }, 5000)
       window.localStorage.setItem(
         'loggedBlogappUser', JSON.stringify(user)
       )
@@ -120,7 +127,7 @@ const App = () => {
       setPassword('')
     } catch (exception) {
       setNotification({
-        message: 'Wrong credentials',
+        message: 'wrong username or passwords',
         type: 'error'
       })
       setTimeout(() => {
@@ -200,7 +207,7 @@ const App = () => {
       {user === null ?
         loginForm() :
         <div>
-          <p>{user.name} logged-in <button onClick={() => logout()}>logout</button></p>
+          <p><span>{user.name} logged in</span> <button onClick={() => logout()}>logout</button></p>
           {blogForm()}
           <h2>blogs</h2>
           {blogs

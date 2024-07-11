@@ -32,7 +32,13 @@ const LoginForm = ({
             onChange={handlePasswordChange}
           />
         </div>
-        <button name="login" type="submit">login</button>
+        <button
+            data-testid='login' 
+            name="login" 
+            type="submit"
+            >
+              login
+        </button>
       </form>
     </div>
   )
