@@ -54,19 +54,12 @@ describe('Blog app', () => {
   test('valid user can login', async ({ page }) => {
     try {
       await loginWith(page, 'tester', '420')
-      // console.log('Test User logged-in in theory')
     }
     catch (error) {
       console.error(error)
     }
   
-    // await expect(page.getByText('tester logged-in')).toBeVisible()
     await expect(page.getByTestId('notification')).toHaveText('Test User logged-in')
-    // alternative 1
-    // await expect(page.locator('text=tester logged-in')).toBeVisible()
-    // alternative 2
-    // const successDiv = await page.locator('.success')
-    // await expect(successDiv).toContainText('tester logged-in')
   })
 
   test('invalid user cannot login', async ({ page }) => {
@@ -81,19 +74,29 @@ describe('Blog app', () => {
     })
 
     test('a new blog can be created', async ({ page }) => {
-      await createBlog(page, 'With a Great Title', 'tester', 'https://example.com')
+      await createBlog(page, 'With a Great Title', 'Test User', 'https://example.com')
       await expect(page.getByText('a new blog With a Great Title by Test User added')).toBeVisible()
     })
 
     describe('and a blog exists', () => {
       beforeEach(async ({ page }) => {
-        await createBlog(page, 'With a Great Title', 'tester', 'https://example.com')
+        await createBlog(page, 'With a Great Title', 'Test User', 'https://example.com')
       })
 
       test('user can like a blog', async ({ page }) => {
         await page.getByRole('button', { name: 'view' }).click()
         await page.getByRole('button', { name: 'like' }).click()
         await expect(page.getByText('Liked With a Great Title by Test User')).toBeVisible()
+      })
+
+      test('user can delete a blog', async ({ page }) => {
+        await page.getByRole('button', { name: 'view' }).click()
+        // deal with the window.confirm
+        page.on('dialog', async dialog => {
+          await dialog.accept()
+        })
+        await page.getByRole('button', { name: 'delete' }).click()
+        await expect(page.getByText('With a Great Title Test User')).not.toBeVisible()
       })
     })
   })

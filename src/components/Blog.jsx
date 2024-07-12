@@ -20,8 +20,12 @@ const Blog = ({ blog, handleLike, handleDelete, currentUser }) => {
           <p>likes {blog.likes} <button onClick={() => handleLike(blog)}>like</button></p>
           <p>{blog.author}</p>
           {/* Only show the button if the user is the same as the blog user */}
+          {console.log("currentUser:")}
+          {console.log(currentUser)}
+          {console.log("blog.user:")}
+          {console.log(blog.user)}
           {currentUser && blog.user && blog.user.username === currentUser.username && (
-            <button onClick={() => handleDelete(blog)}>remove</button>
+            <button name="delete" onClick={() => handleDelete(blog)}>delete</button>
           )}
         </div>
       )}
