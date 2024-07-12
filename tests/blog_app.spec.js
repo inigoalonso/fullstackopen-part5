@@ -22,9 +22,17 @@ describe('Blog app', () => {
         password: '420',
       }
     })
+    // create a "other" user for the backend here
+    await request.post('/api/users', {
+      data: {
+        name: 'Other User',
+        username: 'other',
+        password: '420',
+      }
+    })
     // Check that the user was created
-    const response = await request.get('/api/users')
-    const users = await response.json()
+    // const response = await request.get('/api/users')
+    // const users = await response.json()
     // console.log('users', users)
 
     await page.goto('/')
@@ -97,6 +105,21 @@ describe('Blog app', () => {
         })
         await page.getByRole('button', { name: 'delete' }).click()
         await expect(page.getByText('With a Great Title Test User')).not.toBeVisible()
+      })
+
+      test('only the user who created the blog can see the delete button', async ({ page }) => {
+        // await page.goto('/')
+        // await createBlog(page, 'With a Great Title', 'Test User', 'https://example.com')
+        await page.getByRole('button', { name: 'logout' }).click()
+        await loginWith(page, 'other', '420')
+        await page.getByRole('button', { name: 'cancel' }).click()
+        await page.getByRole('button', { name: 'view' }).click()
+        // await createBlog(page, 'Another Great Title', 'Other User', 'https://example.com')
+        // await page.getByRole('button', { name: 'cancel' }).click()
+        // await page.getByRole('button', { name: 'view' }).click()
+        // count the number of delete buttons and check none is visible
+        const deleteButtons = await page.$$('button[name=delete]')
+        expect(deleteButtons.length).toBe(0)
       })
     })
   })
